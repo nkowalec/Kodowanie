@@ -21,14 +21,17 @@ namespace Kodowanie_Huffmana
             {
                 using (Stream stream = File.Open(args[0], FileMode.Open))
                 {
-                    Tree drzewo = new Tree(stream);
-                    Dictionary<string, BitArray> dict = (Dictionary<string, BitArray>)drzewo.ToDictionary();
+                    Tree drzewo = new Tree(stream);     //Utwórz drzewo na podstawie strumienia (pliku)
+                    Dictionary<string, BitArray> dict = (Dictionary<string, BitArray>)drzewo.ToDictionary();    //Pobierz z gotowego drzewa słownik 'znak' -> 'bit kod'
                     
-                    foreach(var item in dict)
+                    foreach(var item in dict)   
                     {
-                        Console.WriteLine($"{item.Key} ---> {item.Value.ToBinaryString()}");
+                        Console.WriteLine($"{item.Key} ---> {item.Value.ToBinaryString()}");    //Wypisz informację o każdej parze 'znak' -> 'kod'
                     }
 
+                    Entropia(drzewo);   //Pisz entropię
+
+                    SredniaWyniku(drzewo);      //Pisz średnią długość wynikową
 
                     //stream.Seek(0, SeekOrigin.Begin);
                     Console.WriteLine();
@@ -37,19 +40,19 @@ namespace Kodowanie_Huffmana
                         while(reader.Peek() >= 0)
                         {
 
-                            Console.Write(dict[((char)reader.Read()).ToString()].ToBinaryString());
+                            Console.Write(dict[((char)reader.Read()).ToString()].ToBinaryString());     //Zakoduj Przekazany plik, wynik do konsoli (tylko)
                         }
                     }
-                    
-                    Entropia(drzewo);
-
-                    SredniaWyniku(drzewo);
 
                     Console.ReadKey();
                 }
             }
         }
 
+        /// <summary>
+        /// Wypisuje na konsoli średnią długość kodu wynikowego
+        /// </summary>
+        /// <param name="drzewo"></param>
         private static void SredniaWyniku(Tree drzewo)
         {
             Console.WriteLine();
@@ -63,6 +66,10 @@ namespace Kodowanie_Huffmana
             Console.WriteLine("Średnia długość kodu: " + suma);
         }
 
+        /// <summary>
+        /// Wypisuje na konsoli Entropię dla zadanego drzewa
+        /// </summary>
+        /// <param name="drzewo"></param>
         private static void Entropia(Tree drzewo)
         {
             Console.WriteLine();
