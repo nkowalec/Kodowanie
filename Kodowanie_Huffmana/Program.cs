@@ -40,9 +40,39 @@ namespace Kodowanie_Huffmana
                             Console.Write(dict[((char)reader.Read()).ToString()].ToBinaryString());
                         }
                     }
+                    
+                    Entropia(drzewo);
+
+                    SredniaWyniku(drzewo);
+
                     Console.ReadKey();
                 }
             }
+        }
+
+        private static void SredniaWyniku(Tree drzewo)
+        {
+            Console.WriteLine();
+            double suma = 0;
+
+            foreach(Node node in drzewo.CharNodesArray)
+            {
+                suma += node.Probability * node.GetNodeFullCode().Count;
+            }
+
+            Console.WriteLine("Średnia długość kodu: " + suma);
+        }
+
+        private static void Entropia(Tree drzewo)
+        {
+            Console.WriteLine();
+            double suma = 0;
+            foreach(Node node in drzewo.CharNodesArray)
+            {
+                suma += (node.Probability * Math.Log(1 / node.Probability, 2));
+            }
+
+            Console.WriteLine("Entropia wynosi: " + suma);
         }
     }
 }

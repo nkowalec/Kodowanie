@@ -73,7 +73,7 @@ namespace HuffmanCode
         {
             foreach (var item in dict)
             {
-                AddEmptyNode(item.Key, item.Value / length);
+                AddEmptyNode(item.Key, (double)item.Value / length);
             }
             BlockedEmpty = true;
         }
@@ -95,7 +95,7 @@ namespace HuffmanCode
                 
                 foreach (var item in temp)
                 {
-                    AddEmptyNode(item.Key, item.Value / sr.BaseStream.Length);
+                    AddEmptyNode(item.Key, (double)item.Value / sr.BaseStream.Length);
                 }
                 this.GenerateTree();
                 BlockedEmpty = true;
@@ -165,6 +165,14 @@ namespace HuffmanCode
         private List<Node> GetTopOrderedNodes()
         {
             return NodeList.Where(x => x.Parent == null && x.Probability < 1).OrderBy(x => x.Probability).ToList();
+        }
+
+        public Node[] CharNodesArray
+        {
+            get
+            {
+                return NodeList.Where(x => x.Level == 0).ToArray();
+            }
         }
     }
 }
