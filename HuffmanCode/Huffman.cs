@@ -6,7 +6,7 @@ using System.IO;
 
 namespace HuffmanCode 
 {
-    class Node
+    public class Node
     {
         public Node(string word, double probability)   //Tworzy pusty liść
         {
@@ -56,7 +56,7 @@ namespace HuffmanCode
         }
     }
     
-    class Tree
+    public class Tree
     {
         private List<Node> NodeList { get; set; } = new List<Node>();
         private bool BlockedEmpty = false;
