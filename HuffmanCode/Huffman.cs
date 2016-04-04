@@ -51,8 +51,11 @@ namespace HuffmanCode
         }
         private static void GetNodeFullCode(Node node, List<bool> lista)
         {
-            lista.Add(node.bitCode);
-            Node.GetNodeFullCode(node.Parent, lista);
+            if (node.Parent != null)
+            {
+                lista.Add(node.bitCode);
+                Node.GetNodeFullCode(node.Parent, lista);
+            }
         }
     }
     

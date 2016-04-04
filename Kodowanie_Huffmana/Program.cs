@@ -28,6 +28,19 @@ namespace Kodowanie_Huffmana
                     {
                         Console.WriteLine($"{item.Key} ---> {item.Value.ToBinaryString()}");
                     }
+
+
+                    //stream.Seek(0, SeekOrigin.Begin);
+                    Console.WriteLine();
+                    using(StreamReader reader = new StreamReader(args[0]))
+                    {
+                        while(reader.Peek() >= 0)
+                        {
+
+                            Console.Write(dict[((char)reader.Read()).ToString()].ToBinaryString());
+                        }
+                    }
+                    Console.ReadKey();
                 }
             }
         }
