@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{766014C5-1B98-4D8C-99F9-91C7A0E6295A}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{D01FB963-8B27-4345-BE52-DD705F8F3F98}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kodowanie_Huffmana</RootNamespace>
-    <AssemblyName>Kodowanie_Huffmana</AssemblyName>
+    <RootNamespace>LzwCode</RootNamespace>
+    <AssemblyName>LzwCode</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -43,25 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="LzwCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ArythmeticCode\ArythmeticCode.csproj">
-      <Project>{6bdcf317-03ef-4847-a345-52cc7d67e2bc}</Project>
-      <Name>ArythmeticCode</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HuffmanCode\HuffmanCode.csproj">
-      <Project>{f7698408-6981-44fc-8cb9-28cdddca8f2c}</Project>
-      <Name>HuffmanCode</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LzwCode\LzwCode.csproj">
-      <Project>{d01fb963-8b27-4345-be52-dd705f8f3f98}</Project>
-      <Name>LzwCode</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

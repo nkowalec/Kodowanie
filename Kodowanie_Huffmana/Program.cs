@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HuffmanCode;
 using System.Collections;
+using ArythmeticCode;
 
 namespace Kodowanie_Huffmana
 {
@@ -16,6 +17,18 @@ namespace Kodowanie_Huffmana
             if(args.Length < 1)
             {
                 Console.WriteLine("Brak argumentów, jako pierwszy parametr podaj ścieżkę do pliku!");
+
+                using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("aabbaabdcd")))
+                {
+
+                    Schema aryth = new Schema(stream);
+                    Console.WriteLine(aryth.CodeIt());
+
+                    Console.ReadKey();
+
+                }
+
+                
             }
             else
             {
