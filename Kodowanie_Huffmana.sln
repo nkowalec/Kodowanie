@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kodowanie_Huffmana", "Kodowanie_Huffmana\Kodowanie_Huffmana.csproj", "{766014C5-1B98-4D8C-99F9-91C7A0E6295A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuffmanCode", "HuffmanCode\HuffmanCode.csproj", "{F7698408-6981-44FC-8CB9-28CDDDCA8F2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArythmeticCode", "ArythmeticCode\ArythmeticCode.csproj", "{6BDCF317-03EF-4847-A345-52CC7D67E2BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F7698408-6981-44FC-8CB9-28CDDDCA8F2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7698408-6981-44FC-8CB9-28CDDDCA8F2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7698408-6981-44FC-8CB9-28CDDDCA8F2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BDCF317-03EF-4847-A345-52CC7D67E2BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BDCF317-03EF-4847-A345-52CC7D67E2BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BDCF317-03EF-4847-A345-52CC7D67E2BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BDCF317-03EF-4847-A345-52CC7D67E2BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
