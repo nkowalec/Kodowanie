@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -57,10 +58,6 @@
     <ProjectReference Include="..\HuffmanCode\HuffmanCode.csproj">
       <Project>{f7698408-6981-44fc-8cb9-28cdddca8f2c}</Project>
       <Name>HuffmanCode</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LzwCode\LzwCode.csproj">
-      <Project>{d01fb963-8b27-4345-be52-dd705f8f3f98}</Project>
-      <Name>LzwCode</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -15,81 +15,151 @@ namespace ArythmeticCode
         /// <param name="slownik">Słownik znaków z liczbą wystąpień w tekście</param>
         public Schema(Stream tekst)
         {
-            dict = new Dictionary<char, int>();
-            text = tekst;
-            StreamReader sr = new StreamReader(tekst);
-
-            int znak;
-            while((znak = sr.Read()) > -1)
-            {
-                if (!dict.ContainsKey((char)znak))
-                {
-                    dict.Add((char)znak, 0);
-                }
-                dict[(char)znak] += 1;
-            }
-            
-
-            k = (int)Math.Ceiling(Math.Log(4 * tekst.Length , 2));
-            M = (int)Math.Round(Math.Pow(2, k));
-            Fn = (int)tekst.Length;
             text = tekst;
         }
 
-        Dictionary<char, int> dict { get; set; }
+        private void GetPropabilityFromTxt()
+        {
+            text.Seek(0, SeekOrigin.Begin);
+            var dictTmp = new Dictionary<char, int>();
+            dict = new Dictionary<char, double>();
+            StreamReader sr = new StreamReader(text);
+            int znak;
+            while ((znak = sr.Read()) > -1)
+            {
+                if (!dictTmp.ContainsKey((char)znak))
+                {
+                    dictTmp.Add((char)znak, 0);
+                }
+                dictTmp[(char)znak] += 1;
+            }
 
-        int M { get; set; }
-        int k { get; set; }
+            foreach (var item in dictTmp)
+            {
+                dict.Add(item.Key, (double)item.Value / text.Length);
+            }
+        }
 
-        int Fn { get; set; }
+        Dictionary<char, double> dict { get; set; }
 
         Stream text;
 
-        public decimal CodeIt()
+        public double CodeIt()
         {
+            GetPropabilityFromTxt();
             List<Przedzial> przedzialy = new List<Przedzial>();
-            int before = 0;
-            foreach(var item in dict)
-            {
-                przedzialy.Add(new Przedzial(item.Key, before + 1, before += 1 + item.Value * (M / Fn)));
-            }
-            var tmp = przedzialy.Last();
-            tmp = new Przedzial(tmp.Znak, tmp.From, M);
 
+            double From = 0;
+            double To = 1;
+            Przedzial current = Przedzial.Empty;
+            text.Seek(0, SeekOrigin.Begin);
             StreamReader sr = new StreamReader(text);
-            int znak;
-            sr.BaseStream.Seek(0, SeekOrigin.Begin);
-            while((znak = sr.Read()) > -1)
+            int znak = 0;
+
+            while ((znak = sr.Read()) > -1)
             {
-                var przedzial = przedzialy.Where(x => x.Znak == (char)znak).First();
-                before = przedzial.From;
-                M = przedzial.To;
-                przedzialy = new List<Przedzial>();
+                bool first = true;
+                double probability = 0;
 
                 foreach (var item in dict)
                 {
-                    przedzialy.Add(new Przedzial(item.Key, before + 1, before += 1 + item.Value * (M / Fn)));
+                    Przedzial p = Przedzial.Empty;
+                    if (first)
+                    {
+                        p = new Przedzial(item.Key, From, From + ((To - From) * (probability += item.Value)));
+                        first = false;
+                    }
+                    else
+                    {
+                        p = new Przedzial(item.Key, From + ((To - From) * probability), From + ((To - From) * (probability += item.Value)));
+                    }
+                    przedzialy.Add(p);
                 }
-                var tmp2 = przedzialy.Last();
-                tmp2 = new Przedzial(tmp.Znak, tmp.From, M);
+                current = przedzialy.Where(x => x.Znak == (char)znak).First();
+                From = current.From;
+                To = current.To;
+                WritePrzedzialy(przedzialy);
+                przedzialy.Clear();
             }
 
-            return 0;
+            return current.From;
+        }
+
+        public string DecodeIt(double num)
+        {
+            Console.WriteLine(num);
+            StringBuilder sb = new StringBuilder();
+            List<Przedzial> przedzialy = new List<Przedzial>();
+            Przedzial p = Przedzial.Empty;
+
+            double From = 0;
+            double To = 1;
+
+            while (p.From != num)
+            {
+                bool first = true;
+                double probability = 0;
+
+                foreach (var item in dict)
+                {
+                    p = Przedzial.Empty;
+                    if (first)
+                    {
+                        p = new Przedzial(item.Key, From, From + ((To - From) * (probability += item.Value)));
+                        first = false;
+                    }
+                    else
+                    {
+                        p = new Przedzial(item.Key, From + ((To - From) * probability), From + ((To - From) * (probability += item.Value)));
+                    }
+                    przedzialy.Add(p);
+                }
+
+                p = przedzialy.Where(x => x.Contains(num)).First();
+                From = p.From;
+                To = p.To;
+                sb.Append(p.Znak);
+                przedzialy.Clear();
+            }
+            return sb.ToString();
+        }
+
+        private void WritePrzedzialy(List<Przedzial> przedzialy)
+        {
+            bool first = true;
+            foreach(var item in przedzialy)
+            {
+                if (first)
+                {
+                    Console.Write($"0 - {item.Znak} - {item.To}");
+                    first = false;
+                }else
+                {
+                    Console.Write($" - {item.Znak} - {item.To}");
+                }
+            }
+            Console.WriteLine();
         }
     }
 
     public struct Przedzial
     {
         public char Znak { get; set; }
-        public int From { get; set; }
-        public int To { get; set; }
+        public double From { get; set; }
+        public double To { get; set; }
 
-        public Przedzial(Char znak, int from, int to)
+        public Przedzial(Char znak, double from, double to)
         {
             Znak = znak;
             From = from;
             To = to;
         }
+
+        public bool Contains(double value)
+        {
+            return From <= value && To > value;
+        }
+
         public static Przedzial Empty = new Przedzial();
     }
 }

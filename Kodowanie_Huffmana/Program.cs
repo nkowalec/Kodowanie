@@ -7,25 +7,28 @@ using System.Threading.Tasks;
 using HuffmanCode;
 using System.Collections;
 using ArythmeticCode;
+using System.Windows.Forms;
 
 namespace Kodowanie_Huffmana
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             if(args.Length < 1)
             {
                 Console.WriteLine("Brak argumentów, jako pierwszy parametr podaj ścieżkę do pliku!");
 
-                using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("aabbaabdcd")))
+                using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("aabababababkbkabkkbkabkbkabkabkabkabkamambmammbammbmabmambamamammmama")))    //"aabbaabdcd"
                 {
 
                     Schema aryth = new Schema(stream);
-                    Console.WriteLine(aryth.CodeIt());
-
+                    string teee = aryth.DecodeIt(aryth.CodeIt());
+                    Console.WriteLine(teee);
+                    Clipboard.SetText(teee);
                     Console.ReadKey();
-
+                    
                 }
 
                 
