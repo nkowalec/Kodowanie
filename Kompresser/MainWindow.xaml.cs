@@ -64,12 +64,12 @@ namespace Kompresser
         {
             switch ((string)comboTyp.SelectedValue)
             {
-                case TypKodowania.DICT_LZW: UseLZW(); break;
+                case TypKodowania.DICT_LZW: UseLZWCompress(); break;
                 default: MessageBox.Show("Ta metoda nie została jeszcze zaimplementowana"); break;
             }
         }
 
-        private void UseLZW()
+        private void UseLZWCompress()
         {
             LZW.LzwCode lzw = new LzwCode.LzwCode(File);
             List<int> comp = lzw.Compress();
@@ -77,6 +77,49 @@ namespace Kompresser
             {
                 textBlock.Text += (char)item;
             }
+            if (checkBox.IsChecked == true)
+            {
+                var stream = SaveFile();
+                if(stream != null)
+                {
+                    using (StreamWriter sw = new StreamWriter(stream))
+                    {
+                        sw.Write(textBlock.Text);
+                    }
+                }
+            }
+        }
+
+        private Stream SaveFile()
+        {
+            Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog();
+
+            if(dialog.ShowDialog() == true)
+            {
+                return dialog.OpenFile();
+            }
+
+            return null;
+        }
+
+        private void checkBox_Checked(object sender, RoutedEventArgs e)
+        {
+            checkBox.Content = checkBox.IsChecked == true ? "TAK" : "NIE";
+        }
+
+        private void Decompress_Click(object sender, RoutedEventArgs e)
+        {
+            switch ((string)comboTyp.SelectedValue)
+            {
+                case TypKodowania.DICT_LZW: UseLZWDecompress(); break;
+                default: MessageBox.Show("Ta metoda nie została jeszcze zaimplementowana"); break;
+            }
+        }
+
+        private void UseLZWDecompress()
+        {
+            LZW.LzwCode lzw = new LZW.LzwCode(File);
+            textBlock.Text = lzw.Decompress();
         }
     }
 }

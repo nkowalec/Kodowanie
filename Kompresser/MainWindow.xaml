@@ -5,20 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Kompresser"
         mc:Ignorable="d"
-        Title="Kompresser" Height="350" Width="525">
+        Title="Kompresser" Height="396.323" Width="525">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="59*"/>
-            <RowDefinition Height="260*"/>
+            <RowDefinition Height="38*"/>
+            <RowDefinition Height="129*"/>
         </Grid.RowDefinitions>
-        <ComboBox x:Name="comboTyp" Margin="166,50,26,0" VerticalAlignment="Top" Visibility="Hidden" Grid.RowSpan="2" SelectionChanged="comboTyp_SelectionChanged"/>
-        <Label x:Name="labelTyp" Content="Typ kodowania:" HorizontalAlignment="Left" Margin="27,46,0,0" VerticalAlignment="Top" Visibility="Hidden" Grid.RowSpan="2"/>
-        <Button x:Name="Compress" Content="Kompresuj" HorizontalAlignment="Left" Margin="27,30.787,0,0" Click="Compress_Click" VerticalAlignment="Top" Height="32" Width="230" Visibility="Hidden" Grid.Row="1" />
-        <Button x:Name="Decompress" Content="Dekompresuj" HorizontalAlignment="Right" Margin="0,30.787,25,0" VerticalAlignment="Top" Height="32" Width="230" Visibility="Hidden" Grid.Row="1" />
-        <Label x:Name="label_Copy" Content="Otwórz plik:" HorizontalAlignment="Left" Margin="27,14,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="WyborPliku" Content="Wybierz" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="122,15,0,0" Click="WyborPliku_Click" Height="30" Width="98" />
+        <ComboBox x:Name="comboTyp" Margin="166,8,26,0" VerticalAlignment="Top" Visibility="Hidden" SelectionChanged="comboTyp_SelectionChanged" Height="22" Grid.Row="1"/>
+        <Label x:Name="labelTyp" Content="Typ kodowania:" HorizontalAlignment="Left" Margin="27,8,0,0" VerticalAlignment="Top" Visibility="Hidden" Height="26" Width="92" Grid.Row="1"/>
+        <Button x:Name="Compress" Content="Kompresuj" HorizontalAlignment="Left" Margin="27,31,0,0" Click="Compress_Click" VerticalAlignment="Top" Height="32" Width="230" Visibility="Hidden" Grid.Row="1" />
+        <Button x:Name="Decompress" Content="Dekompresuj" HorizontalAlignment="Right" Margin="0,31,25,0" Click="Decompress_Click" VerticalAlignment="Top" Height="32" Width="230" Visibility="Hidden" Grid.Row="1" />
+        <Label x:Name="label_Copy" Content="Otwórz plik:" HorizontalAlignment="Left" Margin="27,14,0,0" VerticalAlignment="Top" Height="26" Width="73"/>
+        <Button x:Name="WyborPliku" Content="Wybierz" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="122,15,0,0" Click="WyborPliku_Click" Height="25" Width="98" />
         <Label x:Name="fileLabel" Content="" Margin="243,14,25,0" VerticalAlignment="Top" TextBlock.FontWeight="Bold" Height="31" />
-        <TextBox x:Name="textBlock" Margin="27,96,26,10" Grid.Row="1" TextWrapping="Wrap" Text=""/>
+        <TextBox x:Name="textBlock" Margin="27,101,26,24" Grid.Row="1" TextWrapping="Wrap" Text=""/>
+        <Label x:Name="label_Copy1" Content="Zapisz wynik do pliku:" HorizontalAlignment="Left" Margin="27,45,0,0" VerticalAlignment="Top" Height="26" Width="126"/>
+        <CheckBox x:Name="checkBox" Content="TAK" HorizontalAlignment="Left" Margin="158,52,0,0" VerticalAlignment="Top" Click="checkBox_Checked" IsChecked="True"/>
 
     </Grid>
 </Window>

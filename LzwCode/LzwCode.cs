@@ -53,10 +53,13 @@ namespace LzwCode
 
         public string Decompress()
         {
-            List<int> compressed;
+            List<int> compressed = new List<int>();
             using (StreamReader sr = new StreamReader(Stream))
             {
-                compressed = new List<int>(sr.ReadToEnd().Cast<int>());
+                foreach(char item in sr.ReadToEnd())
+                {
+                    compressed.Add((int)item);
+                }
             }
 
             // build the dictionary
