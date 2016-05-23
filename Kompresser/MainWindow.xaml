@@ -1,0 +1,24 @@
+﻿<Window x:Class="Kompresser.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Kompresser"
+        mc:Ignorable="d"
+        Title="Kompresser" Height="350" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="59*"/>
+            <RowDefinition Height="260*"/>
+        </Grid.RowDefinitions>
+        <ComboBox x:Name="comboTyp" Margin="166,50,26,0" VerticalAlignment="Top" Visibility="Hidden" Grid.RowSpan="2" SelectionChanged="comboTyp_SelectionChanged"/>
+        <Label x:Name="labelTyp" Content="Typ kodowania:" HorizontalAlignment="Left" Margin="27,46,0,0" VerticalAlignment="Top" Visibility="Hidden" Grid.RowSpan="2"/>
+        <Button x:Name="Compress" Content="Kompresuj" HorizontalAlignment="Left" Margin="27,30.787,0,0" Click="Compress_Click" VerticalAlignment="Top" Height="32" Width="230" Visibility="Hidden" Grid.Row="1" />
+        <Button x:Name="Decompress" Content="Dekompresuj" HorizontalAlignment="Right" Margin="0,30.787,25,0" VerticalAlignment="Top" Height="32" Width="230" Visibility="Hidden" Grid.Row="1" />
+        <Label x:Name="label_Copy" Content="Otwórz plik:" HorizontalAlignment="Left" Margin="27,14,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="WyborPliku" Content="Wybierz" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="122,15,0,0" Click="WyborPliku_Click" Height="30" Width="98" />
+        <Label x:Name="fileLabel" Content="" Margin="243,14,25,0" VerticalAlignment="Top" TextBlock.FontWeight="Bold" Height="31" />
+        <TextBox x:Name="textBlock" Margin="27,96,26,10" Grid.Row="1" TextWrapping="Wrap" Text=""/>
+
+    </Grid>
+</Window>
