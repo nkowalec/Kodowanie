@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ArithmeticCode;
+using HuffmanCode;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,15 +65,16 @@ namespace Kompresser
             }
         }
 
-        private Stream SaveFile()
+        private Stream SaveFile(out string filename)
         {
             Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog();
-
+            
             if(dialog.ShowDialog() == true)
             {
+                filename = dialog.FileName;
                 return dialog.OpenFile();
             }
-
+            filename = null;
             return null;
         }
 
@@ -86,6 +90,8 @@ namespace Kompresser
             switch ((string)comboTyp.SelectedValue)
             {
                 case TypKodowania.DICT_LZW: UseLZWCompress(); break;
+                case TypKodowania.HUFFMAN: UseHuffmanCompress(); break;
+                case TypKodowania.ARYTHMETIC: UseArythmCompress(); break;
                 default: MessageBox.Show("Ta metoda nie została jeszcze zaimplementowana"); break;
             }
         }
@@ -95,6 +101,7 @@ namespace Kompresser
             switch ((string)comboTyp.SelectedValue)
             {
                 case TypKodowania.DICT_LZW: UseLZWDecompress(); break;
+                case TypKodowania.ARYTHMETIC: UseArythmDecompress(); break;
                 default: MessageBox.Show("Ta metoda nie została jeszcze zaimplementowana"); break;
             }
         }
@@ -111,7 +118,8 @@ namespace Kompresser
             }
             if (checkBox.IsChecked == true)
             {
-                var stream = SaveFile();
+                string filename;
+                var stream = SaveFile(out filename);
                 if(stream != null)
                 {
                     using (StreamWriter sw = new StreamWriter(stream))
@@ -128,7 +136,8 @@ namespace Kompresser
 
             if (checkBox.IsChecked == true)
             {
-                var stream = SaveFile();
+                string filename;
+                var stream = SaveFile(out filename);
                 if (stream != null)
                 {
                     using (StreamWriter sw = new StreamWriter(stream))
@@ -138,6 +147,107 @@ namespace Kompresser
                 }
             }
         }
+        #endregion
+
+        #region Huffman
+        private void UseHuffmanCompress()
+        {
+            Tree drzewo = new Tree(new FileStream(File, FileMode.Open));
+            Dictionary<string, BitArray> dict = (Dictionary<string, BitArray>)drzewo.ToDictionary();
+
+            List<bool> dane = new List<bool>();
+            using(StreamReader sr = new StreamReader(File))
+            {
+                while(sr.Peek() >= 0)
+                {
+                    foreach(bool val in dict[((char)sr.Read()).ToString()])
+                    {
+                        dane.Add(val);
+                    }
+                }
+            }
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                BinaryWriter bw = new BinaryWriter(ms);
+                
+                foreach(var item in dict)
+                {
+                    bw.Write(item.Key);
+                    foreach (bool val in item.Value) bw.Write(val);
+                    bw.Write('\n');
+                }
+
+                foreach(bool val in dane)
+                {
+                    bw.Write(val);
+                }
+                
+                ms.Seek(0, SeekOrigin.Begin);
+
+                StreamReader sw = new StreamReader(ms);
+                textBlock.Text = sw.ReadToEnd();
+                
+                if(checkBox.IsChecked == true)
+                {
+                    string filename;
+                    ms.Seek(0, SeekOrigin.Begin);
+                    ms.CopyTo(SaveFile(out filename));
+                }
+            }
+        }
+
+        private void UseHuffmanDecompress()
+        {
+
+        }
+        #endregion
+
+        #region Arythmetic
+
+        private void UseArythmCompress()
+        {
+            var temp = System.IO.Path.GetTempFileName();
+            ArithmeticCoding.Compress(File, temp);
+
+            using(StreamReader sr = new StreamReader(temp))
+            {
+                textBlock.Text = sr.ReadToEnd();
+            }
+
+            if(checkBox.IsChecked == true)
+            {
+                string filename;
+                SaveFile(out filename).Dispose();
+
+                System.IO.File.Delete(filename);
+
+                System.IO.File.Copy(temp, filename);
+            }
+            System.IO.File.Delete(temp);
+        }
+
+        private void UseArythmDecompress()
+        {
+            var temp = @"C:\tmp\mojplik.nk";//System.IO.Path.GetTempFileName();
+            ArithmeticCoding.Decompress(File, temp);
+            //using (StreamReader sr = new StreamReader(temp))
+            //{
+            //    textBlock.Text = sr.ReadToEnd();
+            //}
+
+            if (checkBox.IsChecked == true)
+            {
+                string filename;
+                SaveFile(out filename).Dispose();
+
+                System.IO.File.Delete(filename);
+
+                System.IO.File.Copy(temp, filename);
+            }
+            System.IO.File.Delete(temp);
+        }
+
         #endregion
     }
 }
