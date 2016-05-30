@@ -9,11 +9,11 @@ namespace LzwCode
 {
     public class LzwCode
     {
-        private Stream Stream { get; set; }
+        private string Path { get; set; }
 
-        public LzwCode(Stream _stream)
+        public LzwCode(string _path)
         {
-            Stream = _stream;
+            Path = _path;
         }
 
         public List<int> Compress()
@@ -26,7 +26,7 @@ namespace LzwCode
             string w = string.Empty;
             List<int> compressed = new List<int>();
 
-            using (StreamReader sr = new StreamReader(Stream)) {
+            using (StreamReader sr = new StreamReader(Path)) {
                 foreach (char c in sr.ReadToEnd())
                 {
                     string wc = w + c;
@@ -54,7 +54,7 @@ namespace LzwCode
         public string Decompress()
         {
             List<int> compressed = new List<int>();
-            using (StreamReader sr = new StreamReader(Stream))
+            using (StreamReader sr = new StreamReader(Path))
             {
                 foreach(char item in sr.ReadToEnd())
                 {

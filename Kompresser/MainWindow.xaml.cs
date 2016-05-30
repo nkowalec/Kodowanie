@@ -22,7 +22,9 @@ namespace Kompresser
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Stream File { get; set; } 
+
+        #region Main Elements
+        private string File { get; set; } 
         public MainWindow()
         {
             InitializeComponent();
@@ -44,7 +46,7 @@ namespace Kompresser
 
             if (res == true)
             {
-                File = dialog.OpenFile();
+                File = dialog.FileName;
                 fileLabel.Content = System.IO.Path.GetFileName(dialog.FileName);
                 labelTyp.Visibility = Visibility.Visible;
                 comboTyp.Visibility = Visibility.Visible;
@@ -59,7 +61,26 @@ namespace Kompresser
                 Decompress.Visibility = Visibility.Visible;
             }
         }
-        
+
+        private Stream SaveFile()
+        {
+            Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog();
+
+            if(dialog.ShowDialog() == true)
+            {
+                return dialog.OpenFile();
+            }
+
+            return null;
+        }
+
+        private void checkBox_Checked(object sender, RoutedEventArgs e)
+        {
+            checkBox.Content = checkBox.IsChecked == true ? "TAK" : "NIE";
+        }
+        #endregion
+
+        #region Compress/Decompress Btn's
         private void Compress_Click(object sender, RoutedEventArgs e)
         {
             switch ((string)comboTyp.SelectedValue)
@@ -69,6 +90,17 @@ namespace Kompresser
             }
         }
 
+        private void Decompress_Click(object sender, RoutedEventArgs e)
+        {
+            switch ((string)comboTyp.SelectedValue)
+            {
+                case TypKodowania.DICT_LZW: UseLZWDecompress(); break;
+                default: MessageBox.Show("Ta metoda nie została jeszcze zaimplementowana"); break;
+            }
+        }
+        #endregion
+
+        #region LZW
         private void UseLZWCompress()
         {
             LZW.LzwCode lzw = new LzwCode.LzwCode(File);
@@ -89,37 +121,23 @@ namespace Kompresser
                 }
             }
         }
-
-        private Stream SaveFile()
-        {
-            Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog();
-
-            if(dialog.ShowDialog() == true)
-            {
-                return dialog.OpenFile();
-            }
-
-            return null;
-        }
-
-        private void checkBox_Checked(object sender, RoutedEventArgs e)
-        {
-            checkBox.Content = checkBox.IsChecked == true ? "TAK" : "NIE";
-        }
-
-        private void Decompress_Click(object sender, RoutedEventArgs e)
-        {
-            switch ((string)comboTyp.SelectedValue)
-            {
-                case TypKodowania.DICT_LZW: UseLZWDecompress(); break;
-                default: MessageBox.Show("Ta metoda nie została jeszcze zaimplementowana"); break;
-            }
-        }
-
         private void UseLZWDecompress()
         {
             LZW.LzwCode lzw = new LZW.LzwCode(File);
             textBlock.Text = lzw.Decompress();
+
+            if (checkBox.IsChecked == true)
+            {
+                var stream = SaveFile();
+                if (stream != null)
+                {
+                    using (StreamWriter sw = new StreamWriter(stream))
+                    {
+                        sw.Write(textBlock.Text);
+                    }
+                }
+            }
         }
+        #endregion
     }
 }
