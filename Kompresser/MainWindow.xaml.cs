@@ -218,7 +218,16 @@ namespace Kompresser
                 }
             }
 
+            
+
             var result = cmp.Compress(daneI);
+            StringBuilder sb = new StringBuilder();
+            foreach(byte item in result)
+            {
+                sb.Append((char)item);
+            }
+
+            textBlock.Text = sb.ToString();
 
             if(checkBox.IsChecked == true)
             {
@@ -244,6 +253,13 @@ namespace Kompresser
                 }
             }
             var result = cmp.Decompress(daneI);
+            StringBuilder sb = new StringBuilder();
+            foreach (byte item in result)
+            {
+                sb.Append((char)item);
+            }
+
+            textBlock.Text = sb.ToString();
 
             if (checkBox.IsChecked == true)
             {
