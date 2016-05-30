@@ -1,4 +1,4 @@
-﻿using ArithmeticCode;
+﻿using ArythmeticCode;
 using HuffmanCode;
 using System;
 using System.Collections;
@@ -207,45 +207,52 @@ namespace Kompresser
 
         private void UseArythmCompress()
         {
-            var temp = System.IO.Path.GetTempFileName();
-            ArithmeticCoding.Compress(File, temp);
+            ArythmeticCode.Compression.ArithmeticCompressor cmp = new ArythmeticCode.Compression.ArithmeticCompressor();
 
-            using(StreamReader sr = new StreamReader(temp))
+            List<byte> daneI = new List<byte>();
+            using(BinaryReader br = new BinaryReader(new FileStream(File, FileMode.Open)))
             {
-                textBlock.Text = sr.ReadToEnd();
+                for(int i = 0; i < br.BaseStream.Length; i++)
+                {
+                    daneI.Add(br.ReadByte());
+                }
             }
+
+            var result = cmp.Compress(daneI);
 
             if(checkBox.IsChecked == true)
             {
                 string filename;
-                SaveFile(out filename).Dispose();
-
-                System.IO.File.Delete(filename);
-
-                System.IO.File.Copy(temp, filename);
+                using(BinaryWriter sw = new BinaryWriter(SaveFile(out filename)))
+                {
+                    sw.Write(result);
+                }
             }
-            System.IO.File.Delete(temp);
         }
 
         private void UseArythmDecompress()
         {
-            var temp = @"C:\tmp\mojplik.nk";//System.IO.Path.GetTempFileName();
-            ArithmeticCoding.Decompress(File, temp);
-            //using (StreamReader sr = new StreamReader(temp))
-            //{
-            //    textBlock.Text = sr.ReadToEnd();
-            //}
+            //var temp = @"C:\tmp\mojplik.nk";//System.IO.Path.GetTempFileName();
+            ArythmeticCode.Compression.ArithmeticCompressor cmp = new ArythmeticCode.Compression.ArithmeticCompressor();
+
+            List<byte> daneI = new List<byte>();
+            using (BinaryReader br = new BinaryReader(new FileStream(File, FileMode.Open)))
+            {
+                for (int i = 0; i < br.BaseStream.Length; i++)
+                {
+                    daneI.Add(br.ReadByte());
+                }
+            }
+            var result = cmp.Decompress(daneI);
 
             if (checkBox.IsChecked == true)
             {
                 string filename;
-                SaveFile(out filename).Dispose();
-
-                System.IO.File.Delete(filename);
-
-                System.IO.File.Copy(temp, filename);
+                using (BinaryWriter sw = new BinaryWriter(SaveFile(out filename)))
+                {
+                    sw.Write(result);
+                }
             }
-            System.IO.File.Delete(temp);
         }
 
         #endregion

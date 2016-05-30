@@ -72,6 +72,7 @@ namespace ArithmeticCode
                 writer.WriteByte(b);
 
                 FixValues(b);
+                System.Diagnostics.Debug.WriteLine(i);
             }
         }
 
