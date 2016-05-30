@@ -1,5 +1,5 @@
 ﻿using ArythmeticCode;
-using HuffmanCode;
+using Microsoft.Win32;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -102,6 +102,7 @@ namespace Kompresser
             {
                 case TypKodowania.DICT_LZW: UseLZWDecompress(); break;
                 case TypKodowania.ARYTHMETIC: UseArythmDecompress(); break;
+                case TypKodowania.HUFFMAN: UseHuffmanDecompress(); break;
                 default: MessageBox.Show("Ta metoda nie została jeszcze zaimplementowana"); break;
             }
         }
@@ -152,54 +153,70 @@ namespace Kompresser
         #region Huffman
         private void UseHuffmanCompress()
         {
-            Tree drzewo = new Tree(new FileStream(File, FileMode.Open));
-            Dictionary<string, BitArray> dict = (Dictionary<string, BitArray>)drzewo.ToDictionary();
-
-            List<bool> dane = new List<bool>();
-            using(StreamReader sr = new StreamReader(File))
+            HuffmanTest.HuffmanTree tree = new HuffmanTest.HuffmanTree();
+            string tekst;
+            using(var sr = new StreamReader(File))
             {
-                while(sr.Peek() >= 0)
-                {
-                    foreach(bool val in dict[((char)sr.Read()).ToString()])
-                    {
-                        dane.Add(val);
-                    }
-                }
+                tekst = sr.ReadToEnd();
+            }
+            tree.Build(tekst);
+            var bit_array = tree.Encode(tekst);
+
+            byte[] bytes = new byte[bit_array.Length / 8 + (bit_array.Length % 8 == 0 ? 0 : 1)];
+            bit_array.CopyTo(bytes, 0);
+            string fn;
+            StringBuilder sb = new StringBuilder();
+            foreach(byte item in bytes)
+            {
+                sb.Append((char)item);
             }
 
-            using (MemoryStream ms = new MemoryStream())
+            textBlock.Text = sb.ToString();
+
+            if (checkBox.IsChecked == true)
             {
-                BinaryWriter bw = new BinaryWriter(ms);
-                
-                foreach(var item in dict)
+                using (var bw = new BinaryWriter(SaveFile(out fn)))
                 {
-                    bw.Write(item.Key);
-                    foreach (bool val in item.Value) bw.Write(val);
-                    bw.Write('\n');
-                }
-
-                foreach(bool val in dane)
-                {
-                    bw.Write(val);
-                }
-                
-                ms.Seek(0, SeekOrigin.Begin);
-
-                StreamReader sw = new StreamReader(ms);
-                textBlock.Text = sw.ReadToEnd();
-                
-                if(checkBox.IsChecked == true)
-                {
-                    string filename;
-                    ms.Seek(0, SeekOrigin.Begin);
-                    ms.CopyTo(SaveFile(out filename));
+                    bw.Write(bytes);
                 }
             }
         }
 
         private void UseHuffmanDecompress()
         {
+            HuffmanTest.HuffmanTree tree = new HuffmanTest.HuffmanTree();
+            string tekst;
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Title = "Wybierz plik dla przygotowania drzewa - źródło";
+            if (dialog.ShowDialog() == true)
+            {
+                using (var sr = new StreamReader(dialog.FileName))
+                {
+                    tekst = sr.ReadToEnd();
+                }
+                tree.Build(tekst);
 
+                BitArray bit_array = null;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (FileStream fs = new FileStream(File, FileMode.Open))
+                    {
+                        fs.CopyTo(ms);
+                        bit_array = new BitArray(ms.ToArray());
+                    }
+                }
+
+                var result = tree.Decode(bit_array);
+                textBlock.Text = result;
+                string fn;
+                if (checkBox.IsChecked == true)
+                {
+                    using (var bw = new StreamWriter(SaveFile(out fn)))
+                    {
+                        bw.Write(result);
+                    }
+                }
+            }
         }
         #endregion
 
