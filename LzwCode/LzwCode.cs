@@ -7,18 +7,25 @@ using System.Threading.Tasks;
 
 namespace LzwCode
 {
+    /// <summary>
+    /// Klasa implementująca kodowanie LZW (słownikowe)
+    /// </summary>
     public class LzwCode
     {
-        private string Path { get; set; }
+        private string Path { get; set; }   //ścieżka do pliku poddawanego działaniom 
 
         public LzwCode(string _path)
         {
             Path = _path;
         }
 
+        /// <summary>
+        /// Metoda wykonująca kompresję 
+        /// </summary>
+        /// <returns></returns>
         public List<int> Compress()
         {
-            // build the dictionary
+            // Budowanie słownika startowego
             Dictionary<string, int> dictionary = new Dictionary<string, int>();
             for (int i = 0; i < 256; i++)
                 dictionary.Add(((char)i).ToString(), i);
@@ -27,33 +34,39 @@ namespace LzwCode
             List<int> compressed = new List<int>();
 
             using (StreamReader sr = new StreamReader(Path)) {
+                //dla każdego znaku w pliku wejściowym
                 foreach (char c in sr.ReadToEnd())
                 {
-                    string wc = w + c;
-                    if (dictionary.ContainsKey(wc))
+                    string wc = w + c;  //pobierz nowy ciąg
+                    if (dictionary.ContainsKey(wc))     //sprawdź ciąg w słowniku
                     {
                         w = wc;
                     }
                     else
                     {
-                        // write w to output
-                        compressed.Add(dictionary[w]);
-                        // wc is a new sequence; add it to the dictionary
+                        // dodaj do wyniku
+                        compressed.Add(dictionary[w]);    
+                        // dodaj ciąg do słownika
                         dictionary.Add(wc, dictionary.Count);
                         w = c.ToString();
                     }
                 }
             }
-            // write remaining output if necessary
+            // dopisz pozostałą wartość, jeśli jest to potrzebne
             if (!string.IsNullOrEmpty(w))
                 compressed.Add(dictionary[w]);
 
             return compressed;
         }
 
+        /// <summary>
+        /// Metoda wykonująca dekompresję
+        /// </summary>
+        /// <returns></returns>
         public string Decompress()
         {
             List<int> compressed = new List<int>();
+            //Uzupełnij listę na podstawie pliku
             using (StreamReader sr = new StreamReader(Path))
             {
                 foreach(char item in sr.ReadToEnd())
@@ -62,28 +75,30 @@ namespace LzwCode
                 }
             }
 
-            // build the dictionary
+            // zbuduj słownik startowy
             Dictionary<int, string> dictionary = new Dictionary<int, string>();
             for (int i = 0; i < 256; i++)
                 dictionary.Add(i, ((char)i).ToString());
 
-            string w = dictionary[compressed[0]];
-            compressed.RemoveAt(0);
-            StringBuilder decompressed = new StringBuilder(w);
+            string w = dictionary[compressed[0]];   //pobierz pierwszą wartość ze słownika i odczytaj znak ze słownika
+            compressed.RemoveAt(0);     // usuń pobraną wartość
+            StringBuilder decompressed = new StringBuilder(w);  //utwórz nowy "konstruktor ciągów"
 
+            //Dla każdej wartości w zakodowanym ciągu
             foreach (int k in compressed)
             {
                 string entry = null;
-                if (dictionary.ContainsKey(k))
+                if (dictionary.ContainsKey(k))      //jeśli wartość znajduje się w słowniku to pobierz znak
                     entry = dictionary[k];
-                else if (k == dictionary.Count)
-                    entry = w + w[0];
+                else if (k == dictionary.Count)     //jeśli nie ma wartości to utwórz nowy ciąg
+                    entry = w + w[0];   
 
                 decompressed.Append(entry);
 
-                // new sequence; add it to the dictionary
+                // dodaj nową wartość do słownika
                 dictionary.Add(dictionary.Count, w + entry[0]);
 
+                // nadpisz wartość bierzącą
                 w = entry;
             }
 

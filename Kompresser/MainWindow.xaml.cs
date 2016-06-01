@@ -153,7 +153,7 @@ namespace Kompresser
         #region Huffman
         private void UseHuffmanCompress()
         {
-            HuffmanTest.HuffmanTree tree = new HuffmanTest.HuffmanTree();
+            Huffman.HuffmanTree tree = new Huffman.HuffmanTree();
             string tekst;
             using(var sr = new StreamReader(File))
             {
@@ -184,7 +184,7 @@ namespace Kompresser
 
         private void UseHuffmanDecompress()
         {
-            HuffmanTest.HuffmanTree tree = new HuffmanTest.HuffmanTree();
+            Huffman.HuffmanTree tree = new Huffman.HuffmanTree();
             string tekst;
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Title = "Wybierz plik dla przygotowania drzewa - źródło";
@@ -224,7 +224,7 @@ namespace Kompresser
 
         private void UseArythmCompress()
         {
-            ArythmeticCode.Compression.ArithmeticCompressor cmp = new ArythmeticCode.Compression.ArithmeticCompressor();
+            ArythmeticCode.ArithmeticCompressor cmp = new ArythmeticCode.ArithmeticCompressor();
 
             List<byte> daneI = new List<byte>();
             using(BinaryReader br = new BinaryReader(new FileStream(File, FileMode.Open)))
@@ -259,7 +259,7 @@ namespace Kompresser
         private void UseArythmDecompress()
         {
             //var temp = @"C:\tmp\mojplik.nk";//System.IO.Path.GetTempFileName();
-            ArythmeticCode.Compression.ArithmeticCompressor cmp = new ArythmeticCode.Compression.ArithmeticCompressor();
+            ArythmeticCode.ArithmeticCompressor cmp = new ArythmeticCode.ArithmeticCompressor();
 
             List<byte> daneI = new List<byte>();
             using (BinaryReader br = new BinaryReader(new FileStream(File, FileMode.Open)))

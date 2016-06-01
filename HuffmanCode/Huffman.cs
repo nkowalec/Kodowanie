@@ -4,18 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace HuffmanTest
+namespace Huffman
 {
+    /// <summary>
+    /// Implementacja gałęzi drzewa
+    /// </summary>
     public class Node
     {
-        public char Symbol { get; set; }
-        public int Frequency { get; set; }
-        public Node Right { get; set; }
-        public Node Left { get; set; }
+        public char Symbol { get; set; }    //znak liścia
+        public int Frequency { get; set; }  //Wystąpienia znaku
+        public Node Right { get; set; }     //Prawe dziecko
+        public Node Left { get; set; }      //Lewe dziecko
 
+        /// <summary>
+        /// Metoda zwracająca wynik "listę bitów" dla symbolu
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public List<bool> Traverse(char symbol, List<bool> data)
         {
-            // Leaf
             if (Right == null && Left == null)
             {
                 if (symbol.Equals(this.Symbol))
@@ -62,10 +70,14 @@ namespace HuffmanTest
     }
     public class HuffmanTree
     {
-        private List<Node> nodes = new List<Node>();
-        public Node Root { get; set; }
-        public Dictionary<char, int> Frequencies = new Dictionary<char, int>();
+        private List<Node> nodes = new List<Node>();    //lista gałęzi / liści
+        public Node Root { get; set; }  //Korzeń drzewa
+        public Dictionary<char, int> Frequencies = new Dictionary<char, int>();    //wystąpienia poszczególnych znaków
 
+        /// <summary>
+        /// Przygotowanie drzewa dla wprowadzonego tekstu źródłowego
+        /// </summary>
+        /// <param name="source"></param>
         public void Build(string source)
         {
             for (int i = 0; i < source.Length; i++)
@@ -111,7 +123,11 @@ namespace HuffmanTest
             }
 
         }
-
+        /// <summary>
+        /// Metoda zwracająca zakodowaną wartość dla wprowadzonego tekstu
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public BitArray Encode(string source)
         {
             List<bool> encodedSource = new List<bool>();
@@ -127,6 +143,11 @@ namespace HuffmanTest
             return bits;
         }
 
+        /// <summary>
+        /// Metoda dekodująca Huffman code
+        /// </summary>
+        /// <param name="bits"></param>
+        /// <returns></returns>
         public string Decode(BitArray bits)
         {
             Node current = this.Root;
