@@ -162,17 +162,18 @@ namespace Kompresser
             tree.Build(tekst);
             var bit_array = tree.Encode(tekst);
 
-            byte[] bytes = new byte[bit_array.Length / 8 + (bit_array.Length % 8 == 0 ? 0 : 1)];
-            bit_array.CopyTo(bytes, 0);
+            byte[] bytes = new byte[bit_array.Length / 8 + (bit_array.Length % 8 == 0 ? 0 : 1)];    //utwórz tablicę bajtów o długości odpowiedniej dla BitArray
+            bit_array.CopyTo(bytes, 0);     //Skopiuj wartości do tablicy
             string fn;
             StringBuilder sb = new StringBuilder();
             foreach(byte item in bytes)
             {
-                sb.Append((char)item);
+                sb.Append((char)item);  //zapisz wynik do StringBuilder'a
             }
 
             textBlock.Text = sb.ToString();
 
+            //Opcjonalny zapis do pliku
             if (checkBox.IsChecked == true)
             {
                 using (var bw = new BinaryWriter(SaveFile(out fn)))
@@ -202,7 +203,7 @@ namespace Kompresser
                     using (FileStream fs = new FileStream(File, FileMode.Open))
                     {
                         fs.CopyTo(ms);
-                        bit_array = new BitArray(ms.ToArray());
+                        bit_array = new BitArray(ms.ToArray());     //utworzenie BitArray na podstawie pliku
                     }
                 }
 
@@ -227,6 +228,7 @@ namespace Kompresser
             ArythmeticCode.ArithmeticCompressor cmp = new ArythmeticCode.ArithmeticCompressor();
 
             List<byte> daneI = new List<byte>();
+            //Odczyt pliku do List<byte>
             using(BinaryReader br = new BinaryReader(new FileStream(File, FileMode.Open)))
             {
                 for(int i = 0; i < br.BaseStream.Length; i++)
@@ -235,17 +237,16 @@ namespace Kompresser
                 }
             }
 
-            
-
-            var result = cmp.Compress(daneI);
+            var result = cmp.Compress(daneI);       //kompresja pliku
             StringBuilder sb = new StringBuilder();
+            //Przepisanie wartości po kompresji do textblock'a
             foreach(byte item in result)
             {
                 sb.Append((char)item);
             }
 
             textBlock.Text = sb.ToString();
-
+            //Opcjonalny zapis do pliku
             if(checkBox.IsChecked == true)
             {
                 string filename;
@@ -262,6 +263,7 @@ namespace Kompresser
             ArythmeticCode.ArithmeticCompressor cmp = new ArythmeticCode.ArithmeticCompressor();
 
             List<byte> daneI = new List<byte>();
+            //odczyt pliku do List<byte>
             using (BinaryReader br = new BinaryReader(new FileStream(File, FileMode.Open)))
             {
                 for (int i = 0; i < br.BaseStream.Length; i++)
@@ -269,15 +271,16 @@ namespace Kompresser
                     daneI.Add(br.ReadByte());
                 }
             }
-            var result = cmp.Decompress(daneI);
+            var result = cmp.Decompress(daneI); // dekompresja danych
             StringBuilder sb = new StringBuilder();
+            //Przepisanie wartości po kompresji do textblock'a
             foreach (byte item in result)
             {
                 sb.Append((char)item);
             }
 
             textBlock.Text = sb.ToString();
-
+            //opcjonalny zapis do pliku
             if (checkBox.IsChecked == true)
             {
                 string filename;
