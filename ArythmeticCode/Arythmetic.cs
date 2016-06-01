@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-using EncodeModel = ArythmeticCode.FastModel;
-using DecodeModel = ArythmeticCode.FastModel;
-
 namespace ArythmeticCode
 {
     public class ArithmeticCompressor
     {
-        #region Interface                                                                                                                                                                        
+        static int bitlen = 62;
+        readonly ulong maxRange, half, quarter, quarter3;
+        DataModel model;
+        ulong currentDecodeValue, rangeHigh, rangeLow;
+        BitWriter writer;
+        BitReader reader;
+        long underflow;
 
+        //Konstruktor klasy kompresora
         public ArithmeticCompressor()
         {
             maxRange = 1UL << bitlen;
@@ -19,9 +23,14 @@ namespace ArythmeticCode
             quarter3 = 3 * quarter;
         }
 
+        /// <summary>
+        /// Metoda kompresująca przekazany ciąg bajtów
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public byte[] Compress(IEnumerable<byte> data)
         {
-            ResetEncoder(new EncodeModel(256));
+            ResetEncoder(new DataModel(256));
             foreach (byte b in data)
                 EncodeSymbol(b);
             EncodeSymbol(model.EOF);
@@ -29,9 +38,14 @@ namespace ArythmeticCode
             return writer.Data;
         }
 
+        /// <summary>
+        /// Metoda dekompresująca przekazany ciąg bajtów
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public byte[] Decompress(IEnumerable<byte> data)
         {
-            ResetDecoder(data, new DecodeModel(256));
+            ResetDecoder(data, new DataModel(256));
             List<byte> output = new List<byte>();
             ulong symbol = 0;
             while ((symbol = DecodeSymbol()) != model.EOF)
@@ -46,69 +60,46 @@ namespace ArythmeticCode
                 return model.OptimalLength;
             }
         }
-        #endregion
 
-
-        #region Implementation                                                                                                                                                                   
-
-        static int bitlen = 62;
-        readonly ulong maxRange;
-        readonly ulong half;
-        readonly ulong quarter;
-        readonly ulong quarter3;
-
-        IModel model;
-
-
-        BitWriter writer;
-
-        BitReader reader;
-
-
-        ulong rangeHigh;
-        ulong rangeLow;
-        long underflow;
 
         void EncodeSymbol(ulong symbol)
         {
+            Debug.Assert(rangeLow < rangeHigh);
+            ulong range = rangeHigh - rangeLow + 1, left, right;
+            model.GetRangeFromSymbol(symbol, out left, out right);
 
+            ulong step = range / model.Total;
+            Debug.Assert(step > 0);
+            rangeHigh = rangeLow + step * right - 1;
+            rangeLow = rangeLow + step * left;
+
+            model.AddSymbol(symbol);
+
+            while ((rangeHigh < half) || (half <= rangeLow))
             {
-                Debug.Assert(rangeLow < rangeHigh);
-                ulong range = rangeHigh - rangeLow + 1, left, right;
-                model.GetRangeFromSymbol(symbol, out left, out right);
-
-                ulong step = range / model.Total;
-                Debug.Assert(step > 0);
-                rangeHigh = rangeLow + step * right - 1;
-                rangeLow = rangeLow + step * left;
-
-                model.AddSymbol(symbol);
-
-                while ((rangeHigh < half) || (half <= rangeLow))
+                if (rangeHigh < half)
                 {
-                    if (rangeHigh < half)
-                    {
-                        writer.Write(0);
-                        while (underflow > 0) { --underflow; writer.Write(1); }
-                        rangeHigh = (rangeHigh << 1) + 1;
-                        rangeLow <<= 1;
-                    }
-                    else
-                    {
-                        writer.Write(1);
-                        while (underflow > 0) { --underflow; writer.Write(0); }
-                        rangeHigh = ((rangeHigh - half) << 1) + 1;
-                        rangeLow = (rangeLow - half) << 1;
-                    }
+                    writer.Write(0);
+                    while (underflow > 0) { --underflow; writer.Write(1); }
+                    rangeHigh = (rangeHigh << 1) + 1;
+                    rangeLow <<= 1;
                 }
-                while ((quarter <= rangeLow) && (rangeHigh < quarter3))
+                else
                 {
-                    underflow++;
-                    rangeLow = (rangeLow - quarter) << 1;
-                    rangeHigh = ((rangeHigh - quarter) << 1) + 1;
+                    writer.Write(1);
+                    while (underflow > 0) { --underflow; writer.Write(0); }
+                    rangeHigh = ((rangeHigh - half) << 1) + 1;
+                    rangeLow = (rangeLow - half) << 1;
                 }
-                Debug.Assert(rangeHigh - rangeLow >= quarter);
             }
+            while ((quarter <= rangeLow) && (rangeHigh < quarter3))
+            {
+                underflow++;
+                rangeLow = (rangeLow - quarter) << 1;
+                rangeHigh = ((rangeHigh - quarter) << 1) + 1;
+            }
+
+            Debug.Assert(rangeHigh - rangeLow >= quarter);
         }
 
         void FlushEncoder()
@@ -127,7 +118,7 @@ namespace ArythmeticCode
             writer.Flush();
         }
 
-        void ResetEncoder(IModel model)
+        void ResetEncoder(DataModel model)
         {
             this.model = model;
 
@@ -137,7 +128,7 @@ namespace ArythmeticCode
             writer = new BitWriter();
         }
 
-        void ResetDecoder(IEnumerable<byte> data, IModel model)
+        void ResetDecoder(IEnumerable<byte> data, DataModel model)
         {
             this.model = model;
 
@@ -194,113 +185,15 @@ namespace ArythmeticCode
                 return symbol;
             }
         }
-
-        ulong currentDecodeValue;
-
-        #endregion
     }
 
-    #region Models                                                                                                                                                                               
-    public interface IModel
+    class DataModel
     {
-
-        ulong EOF { get; }
-
-        ulong Total { get; set; }
-
-        void AddSymbol(ulong symbol);
-
-        void GetRangeFromSymbol(ulong symbol, out ulong low, out ulong high);
-
-        ulong GetSymbolAndRange(ulong value, out ulong low, out ulong high);
-
-        ulong OptimalLength { get; }
-
-    }
-
-    class SimpleModel : IModel
-    {
-        #region Interface                                                                                                                                                                        
-
         public ulong EOF { get { return eof; } }
 
         public ulong Total { get; set; }
 
-        public SimpleModel(ulong size)
-        {
-            eof = size;
-            cumulativeCount = new ulong[EOF + 2];
-            for (ulong i = 0; i < (ulong)(cumulativeCount.Length - 1); ++i)
-                AddSymbol(i);
-        }
-
-        public void AddSymbol(ulong symbol)
-        {
-            for (ulong i = symbol + 1; i < (ulong)cumulativeCount.Length; ++i)
-                cumulativeCount[i]++;
-            ++Total;
-        }
-
-        public void GetRangeFromSymbol(ulong symbol, out ulong low, out ulong high)
-        {
-            ulong index = symbol;
-            low = cumulativeCount[index];
-            high = cumulativeCount[index + 1];
-        }
-
-        public ulong GetSymbolAndRange(ulong value, out ulong left, out ulong right)
-        {
-            for (ulong i = 0; i < (ulong)cumulativeCount.Length - 1; ++i)
-            {
-                if ((cumulativeCount[i] <= value) && (value < cumulativeCount[i + 1]))
-                {
-                    GetRangeFromSymbol(i, out left, out right);
-                    return i;
-                }
-            }
-            Debug.Assert(false, "Illegal lookup overflow!");
-            left = right = UInt64.MaxValue;
-            return UInt64.MaxValue;
-        }
-
-        public ulong OptimalLength
-        {
-            get
-            {
-                double sum = 0;
-                double total = (Total - (ulong)cumulativeCount.Length);
-                for (int i = 0; i < cumulativeCount.Length - 1; ++i)
-                {
-                    double freq = cumulativeCount[i + 1] - cumulativeCount[i] - 1;
-                    if (freq > 0)
-                    {
-                        double p = freq / total;
-                        sum += -Math.Log(p, 2) * freq;
-                    }
-                }
-                return (ulong)(sum);
-            }
-        }
-        #endregion
-
-        #region Implementation                                                                                                                                                                   
-
-        ulong[] cumulativeCount;
-
-        ulong eof;
-        #endregion
-
-    }
-
-    class FastModel : IModel
-    {
-        #region Implementation                                                                                                                                                                   
-
-        public ulong EOF { get { return eof; } }
-
-        public ulong Total { get; set; }
-
-        public FastModel(ulong size)
+        public DataModel(ulong size)
         {
             eof = size;
             tree = new ulong[EOF + 2];
@@ -378,10 +271,6 @@ namespace ArythmeticCode
                 return (ulong)(sum);
             }
         }
-        #endregion
-
-
-        #region Implementation                                                                                                                                                                   
 
         ulong Query(long a, long b)
         {
@@ -402,16 +291,12 @@ namespace ArythmeticCode
 
 
         ulong eof;
-        #endregion
     }
-    #endregion
 
-    #region BitIO                                                                                                                                                                                
+    #region Bit Writer/Reader                                                                                                                                                                          
 
     class BitWriter
     {
-        #region Interface                                                                                                                                                                        
-
         public BitWriter()
         {
             bitPos = 0;
@@ -438,18 +323,14 @@ namespace ArythmeticCode
         }
 
         public byte[] Data { get { return encodeData.ToArray(); } }
-        #endregion
-
-        #region Implementation                                                                                                                                                                   
+                                                                                                                                                                  
         int bitPos = 0;
         byte datum;
         List<byte> encodeData;
-        #endregion
     }
 
     class BitReader
-    {
-        #region Interface                                                                                                                                                                        
+    {                                                                                                                                                                    
 
         public BitReader(IEnumerable<byte> data)
         {
@@ -475,14 +356,11 @@ namespace ArythmeticCode
             }
             return bit;
         }
-        #endregion
-
-        #region Implementation                                                                                                                                                                   
+                                                                                                                                                                
         byte datum;
         int bitPos;
         IEnumerator<byte> decodeData;
         long decodeByteIndex;
-        #endregion
     }
 
     #endregion
