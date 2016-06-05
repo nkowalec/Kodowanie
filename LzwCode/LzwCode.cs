@@ -35,8 +35,11 @@ namespace LzwCode
 
             using (StreamReader sr = new StreamReader(Path, Encoding.ASCII)) {
                 //dla każdego znaku w pliku wejściowym
-                foreach (char c in sr.ReadToEnd())
+            //    int s;
+             //   while((s = sr.Read()) > 0)
+                 foreach (char c in sr.ReadToEnd())
                 {
+                   // char c = (char)s;
                     string wc = w + c;  //pobierz nowy ciąg
                     if (dictionary.ContainsKey(wc))     //sprawdź ciąg w słowniku
                     {

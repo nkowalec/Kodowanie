@@ -113,10 +113,10 @@ namespace Kompresser
         {
             LZW.LzwCode lzw = new LzwCode.LzwCode(File);
             List<int> comp = lzw.Compress();
-            foreach (var item in comp)
-            {
-                textBlock.Text += (char)item;
-            }
+            //foreach (var item in comp)
+            //{
+            //    textBlock.Text += (char)item;
+            //}
             if (checkBox.IsChecked == true)
             {
                 string filename;
@@ -125,7 +125,8 @@ namespace Kompresser
                 {
                     using (StreamWriter sw = new StreamWriter(stream))
                     {
-                        sw.Write(textBlock.Text);
+                        foreach (int val in comp)
+                            sw.Write((char)val);
                     }
                 }
             }
