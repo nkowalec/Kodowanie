@@ -33,7 +33,7 @@ namespace LzwCode
             string w = string.Empty;
             List<int> compressed = new List<int>();
 
-            using (StreamReader sr = new StreamReader(Path)) {
+            using (StreamReader sr = new StreamReader(Path, Encoding.ASCII)) {
                 //dla każdego znaku w pliku wejściowym
                 foreach (char c in sr.ReadToEnd())
                 {
